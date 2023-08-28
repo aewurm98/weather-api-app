@@ -1,0 +1,123 @@
+/* Out-of-the-box Formatting */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.root > * {
+  margin: 10px;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Formatting for weatherData div element */
+div {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: black;
+}
+
+/* Formatting for currentweather, forecastWeather, and historyWeather buttons */
+.weatherToggle {
+  display: flex;
+  justify-content: space-around;
+  flex: 1;
+  line-height: 3rem;
+  border-radius: 5px;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+}
+
+.weatherToggle.active {
+  background-color: blue;
+  color: white;
+}
+
+/* Formatting for weatherForm form element */
+form {
+  padding: 30px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 1;
+  gap: 3rem;
+  background-color: antiquewhite;
+}
+
+form.active {
+  display: flex;
+}
+
+/* Formatting for weatherLabel label element */
+label {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: black;
+}
+
+/* Formatting for weatherInput input element */
+input {
+  width: 50%;
+  height: 10%;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+/* Formatting for weatherButton button element */
+#weatherButton {
+  width: 25%;
+  height: 10%;
+  border-radius: 5px;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+}
+
+/* Formatting for the weather display sections */
+
+div.weatherDisplay {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+  background-color: antiquewhite;
+}
+
+div.weatherDisplay.active {
+  display: flex;
+}
+
+/* Formatting for the back button */
+#backButton {
+  width: 25%;
+  line-height: 2rem;
+  border-radius: 5px;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+}
