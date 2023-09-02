@@ -6,6 +6,11 @@ const forecast_prefix = '/forecast.json';
 const history_prefix = '/history.json';
 
 const num_days = 3;
+const lookback_days = 7;
+const currentDate = new Date();
+let historyDate = new Date(
+  currentDate.getTime() - 1000 * 60 * 60 * 24 * lookback_days
+);
 
 // API Request Functions
 async function getCurrentWeather(location) {
@@ -16,10 +21,10 @@ async function getCurrentWeather(location) {
     location;
   const response = await try_response(url);
   const info = await parseRealtimeWeather(response);
-  console.log(info);
+  return info;
 }
 
-async function getForecast(location, date) {
+async function getForecast(location) {
   const url =
     'http://api.weatherapi.com/v1/forecast.json?key=' +
     api_key +
@@ -29,7 +34,7 @@ async function getForecast(location, date) {
     num_days;
   const response = await try_response(url);
   const info = await parseForecastWeather(response);
-  console.log(info);
+  return info;
 }
 
 async function getHistory(location, date) {
@@ -42,7 +47,7 @@ async function getHistory(location, date) {
     date;
   const response = await try_response(url);
   const info = await parseHistoryWeather(response);
-  console.log(info);
+  return info;
 }
 
 // Parsing Functions
@@ -185,16 +190,11 @@ async function try_response(url) {
 function get_dt(date) {
   const dt = new Date(date);
   const year = dt.getFullYear();
-  const month = dt.getMonth();
+  const month = dt.getMonth() + 1;
   const day = dt.getDate();
   const dt_string = year + '-' + month + '-' + day;
   return dt_string;
 }
-
-// Testing
-getCurrentWeather('New York');
-// getForecast('New York', '2023-09-01');
-// getHistory('New York', '2023-08-25');
 
 // DOM Manipulation
 
@@ -341,9 +341,8 @@ historyWeatherDisplay.appendChild(historyWeatherTemp);
 
 // Global Variables
 const weatherOptions = document.querySelectorAll('.weatherToggle');
-let selectedWeatherOption = document.querySelectorAll(
-  '.weatherToggle.active.id'
-);
+const displays = document.querySelectorAll('.weatherDisplay');
+let selectedWeatherOption = document.querySelector('.weatherToggle.active').id;
 
 // Functions
 function toggleWeather(e) {
@@ -352,9 +351,135 @@ function toggleWeather(e) {
   });
   e.target.classList.add('active');
   selectedWeatherOption = e.target.id;
+
+  displays.forEach((display) => {
+    display.classList.remove('active');
+  });
+
+  switch (selectedWeatherOption) {
+    case 'currentWeather':
+      currentWeatherDisplay.classList.add('active');
+      currentWeatherDisplay.appendChild(backButton);
+      break;
+    case 'forecastWeather':
+      forecastWeatherDisplay.classList.add('active');
+      forecastWeatherDisplay.appendChild(backButton);
+      break;
+    case 'historyWeather':
+      historyWeatherDisplay.classList.add('active');
+      historyWeatherDisplay.appendChild(backButton);
+      break;
+    default:
+      console.log('Error: No weather option selected.');
+  }
+
+  if (weatherInput.value) {
+    weatherSearch(e);
+  }
+}
+
+function weatherSearch(e) {
+  e.preventDefault();
+  const location = weatherInput.value;
+  let weatherFunction;
+  switch (selectedWeatherOption) {
+    case 'currentWeather':
+      getCurrentWeather(location).then((info) => {
+        populateDisplay(info);
+      });
+      break;
+    case 'forecastWeather':
+      getForecast(location).then((info) => {
+        populateDisplay(info);
+      });
+      break;
+    case 'historyWeather':
+      getHistory(location, get_dt(historyDate)).then((info) => {
+        populateDisplay(info);
+      });
+      break;
+    default:
+      console.log('Error: No weather option selected.');
+  }
+  weatherForm.classList.remove('active');
+  backButton.classList.add('active');
+}
+
+function backToForm(e) {
+  e.preventDefault();
+  displays.forEach((display) => {
+    display.querySelectorAll('h3').forEach((h3) => {
+      h3.textContent = '';
+    });
+  });
+  weatherForm.classList.add('active');
+  backButton.classList.remove('active');
+  weatherInput.value = '';
+}
+
+function populateDisplay(info) {
+  let location;
+  let localtime;
+  let condition;
+  let temp;
+
+  switch (selectedWeatherOption) {
+    case 'currentWeather':
+      location = info.location.name + ', ' + info.location.country;
+      localtime = info.location.localtime;
+      condition = info.current.condition;
+      temp = info.current.temp_f;
+      break;
+    case 'forecastWeather':
+      location = info.location.name + ', ' + info.location.country;
+      localtime = info.location.localtime;
+      condition = info.current.condition;
+      temp = info.current.temp_f;
+      break;
+    case 'historyWeather':
+      location = info.location.name + ', ' + info.location.country;
+      localtime = info.location.localtime;
+      condition = info.forecast.condition;
+      temp = info.forecast.avgtemp_f;
+      break;
+    default:
+      console.log('Error: No weather option selected.');
+  }
+
+  switch (selectedWeatherOption) {
+    case 'currentWeather':
+      currentWeatherLocation.textContent = 'Location: ' + location;
+      currentWeatherLocaltime.textContent = 'Localtime: ' + localtime;
+      currentWeatherCondition.textContent = 'Condition: ' + condition;
+      currentWeatherTemp.textContent = 'Temp (F): ' + temp;
+      break;
+    case 'forecastWeather':
+      forecastWeatherLocation.textContent = 'Location: ' + location;
+      forecastWeatherLocaltime.textContent = 'Localtime: ' + localtime;
+      forecastWeatherCondition.textContent = 'Condition: ' + condition;
+      forecastWeatherTemp.textContent = 'Temp (F): ' + temp;
+      break;
+    case 'historyWeather':
+      historyWeatherLocation.textContent = 'Location: ' + location;
+      historyWeatherLocaltime.textContent = 'Localtime: ' + localtime;
+      historyWeatherCondition.textContent = 'Condition: ' + condition;
+      historyWeatherTemp.textContent = 'Temp (F): ' + temp;
+      break;
+    default:
+      console.log('Error: No weather option selected.');
+  }
 }
 
 // Event Listeners
 weatherOptions.forEach((option) => {
   option.addEventListener('click', toggleWeather);
 });
+
+weatherForm.addEventListener('submit', weatherSearch);
+
+backButton.addEventListener('click', backToForm);
+
+// Testing
+// getCurrentWeather('New York');
+// getForecast('New York', '2023-09-01');
+// getHistory('New York', '2023-08-25');

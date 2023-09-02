@@ -47,6 +47,7 @@ div {
   background-color: white;
   color: black;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .weatherToggle.active {
@@ -94,6 +95,7 @@ input {
   background-color: black;
   color: white;
   font-weight: bold;
+  cursor: pointer;
 }
 
 /* Formatting for the weather display sections */
@@ -110,6 +112,8 @@ div.weatherDisplay {
 
 div.weatherDisplay.active {
   display: flex;
+  gap: 1rem;
+  flex: 1;
 }
 
 /* Formatting for the back button */
@@ -120,4 +124,10 @@ div.weatherDisplay.active {
   background-color: black;
   color: white;
   font-weight: bold;
+  cursor: pointer;
+  display: none;
+}
+
+#backButton.active {
+  display: block;
 }
